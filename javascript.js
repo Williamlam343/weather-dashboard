@@ -1,63 +1,191 @@
-
-
+// Date -> Class -> Function Constructor
+const date = new Date();
+// get month
+const month = date.getMonth() + 1;
+// get the day (date)
+const day = date.getDate();
+// get year
+const year = date.getFullYear();
+var searchInput = $("#search-input")
+var formInput = $("#form-input")
+var btnInput = $("#search-btn")
 const APIKEY = "64f2c72988fa56f79a0b2d9d137d67dc"
+const days = parseInt($(this).attr("data-day"))
+let forecastparams = {
 
-var cityNameInput = "boca raton"
+    q: "",
+    appid: APIKEY,
+    units: "imperial",
 
-// var CurrentWeatherUrl = `api.openweathermap.org/data/2.5/forecast?q=${cityNameInput}&appid=${APIKEY}`
-var forecastUrl = `https://api.openweathermap.org/data/2.5/forecast?q=${cityNameInput}&appid=${APIKEY}&units=imperial`
 
-// call back hell
-fetch(forecastUrl)
-    .then((data) => data.json())
-    .then((forecastData) => {
-        console.log(forecastData)
-        var lon = forecastData.city.coord.lon
-        var lat = forecastData.city.coord.lat
+}
 
-        var oneCallApi = `https://api.openweathermap.org/data/2.5/onecall?lat=${lat}&lon=${lon}&exclude=minutely,hourly,daily,alerts&appid=${APIKEY}`
+$("form").submit(function (event) {
+    event.preventDefault()
+    forecastparams.q = searchInput.val()
 
-        fetch(oneCallApi)
-            .then((data) => data.json())
-            .then((oneCallData) => {
-                console.log(oneCallData)
 
-                var uvi = oneCallData.current.uvi
-                console.log(uvi)
+    removelastsearch()
+    weatherSearch()
+})
 
-            })
+
+
+
+// fetchs data from api:forecast
+function weatherSearch() {
+
+
+    var params = new URLSearchParams(forecastparams)
+    var forecastUrl = `https://api.openweathermap.org/data/2.5/forecast?${params}`
+
+    fetch(forecastUrl)
+        .then((data) => data.json())
+        .then((forecastData) => {
+
+            console.log(forecastData)
+            const oneCallparams = {
+
+
+                lat: forecastData.city.coord.lat,
+                lon: forecastData.city.coord.lon,
+                appid: APIKEY,
+                units: "imperial",
+            }
+
+            let params = new URLSearchParams(oneCallparams)
+
+            var oneCallApi = `https://api.openweathermap.org/data/2.5/onecall?${params}`
+            //fetchs data OneCallapi
+            fetch(oneCallApi)
+
+
+
+                .then((data) => data.json())
+                .then((oneCallData) => {
+                    console.log(oneCallData)
+
+
+                    // builds weather cards for each day
+                    $(".weather-cards").each(function () {
+
+                        //if new search remove each element
+
+
+                        const days = parseInt($(this).attr("data-day"))
+                        var dailytemp = oneCallData.daily[days].temp.day
+                        var dailyfeel = oneCallData.daily[days].feels_like.day
+                        var dailywind = oneCallData.daily[days].wind_speed
+                        var dailyhumid = oneCallData.daily[days].humidity
+                        var dailyuvi = oneCallData.daily[days].uvi
+
+
+
+                        //creates the p tags
+                        let feelslike = $("<p>")
+                        let temp = $("<p>")
+                        let wind = $("<p>")
+                        let humid = $("<p>")
+                        let uvi = $("<p>")
+
+
+
+                        //sets the text for the p tags
+                        feelslike.text(`Feelslike: ${dailytemp}° F`)
+                        temp.text(`Temperature: ${dailyfeel}° F`)
+                        wind.text(`Wind: ${dailywind} MPH`)
+                        humid.text(`Humidity: ${dailyhumid}%`)
+                        uvi.text(`UV index: ${dailyuvi}`)
+
+                        feelslike.attr("id", "feeltemp")
+                        temp.attr("id", "temp")
+                        wind.attr("id", "wind")
+                        humid.attr("id", "humid")
+                        uvi.attr("id", "UVI")
+
+
+                        //classes for for the p tags
+                        $(feelslike).addClass("mx-2")
+                        $(temp).addClass("mx-2")
+                        $(wind).addClass("mx-2")
+                        $(humid).addClass("mx-2")
+                        $(uvi).addClass("mx-2")
+
+
+
+                        //appends the p tags to the cards
+                        $(this).append(feelslike).append(temp).append(wind).append(humid).append(uvi)
+
+
+
+
+
+
+
+
+                    })
+                })
+        })
+}
+
+$(".weather-cards").each(function () {
+
+    let dayAsce = parseInt($(this).attr("data-day"))
+    let date = $("<p>")
+    date.text(`${month}/${day + dayAsce}/${year}`)
+    $(date).addClass("text-center text-xl")
+    $(this).append(date)
+
+})
+
+
+function removelastsearch() {
+
+    //if the p tags exist remove them
+    $(".weather-cards").each(function () {
+
+
+        const days = parseInt($(this).attr("data-day"))
+        $("#weather-cards-" + days).find("#wind").remove()
+        $("#weather-cards-" + days).find("#temp").remove()
+        $("#weather-cards-" + days).find("#humid").remove()
+        $("#weather-cards-" + days).find("#feeltemp").remove()
+        $("#weather-cards-" + days).find("#UVI").remove()
+        console.log(days)
     })
 
 
-const form = document.querySelector("#search-weather");
-const recentSearches = document.querySelector("#recent-searches");
 
-// const api_key = "2083ba99e548234fc6955819000762a8";
+}
+
+// const form = document.querySelector("#search-weather");
+// const recentSearches = document.querySelector("#recent-searches");
+
 // Geo code endpoint
 // http://api.openweathermap.org/geo/1.0/direct?q={city name},{state code},{country code}&limit={limit}&appid={API key}
 
 // One call endpoint
 // https://api.openweathermap.org/data/2.5/onecall?lat={lat}&lon={lon}&exclude={part}&appid={API key}
 
-form.addEventListener("submit", function (e) {
-    e.preventDefault();
+// form.addEventListener("submit", function (e) {
+// e.preventDefault();
     // Retrieve the city name from the input#city-name element
     // and we trim off any extra whitespace
-    const city = document.querySelector("input#city-name").value.trim();
+    // const city = document.querySelector("input#city-name").value.trim();
 
     // Fetch weather data
     // Where are we going to source our data
     // What does the api need to find our city
     // populate our weather details
-});
+// });
 
-recentSearches.addEventListener("click", function (e) {
-    const target = e.target;
-    if (!target.matches("button")) return;
+// recentSearches.addEventListener("click", function (e) {
+//     const target = e.target;
+//     if (!target.matches("button")) return;
     // Retrieve the city name from the button.textContent
     // Fetch weather data
     // populate our weather details
-});
+// });
 
     // window.navigator.geolocation.getCurrentPosition(function (geoData) {
     //   console.log(geoData);
