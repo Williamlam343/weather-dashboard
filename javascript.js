@@ -40,7 +40,10 @@ function weatherSearch() {
     var forecastUrl = `https://api.openweathermap.org/data/2.5/forecast?${params}`
 
     fetch(forecastUrl)
-        .then((data) => data.json())
+        .then((data) => {
+            if (data.status === 404) { return alert(`city not found`) }
+            return data.json()
+        })
         .then((forecastData) => {
 
             console.log(forecastData)
@@ -124,6 +127,30 @@ function weatherSearch() {
 
 
                     })
+
+                    function currentWeatherBg() {
+                        var currentWeather = oneCallData.current.weather[0].main
+
+                        if (currentWeather === `Clouds`) {
+
+                            $("#weather-cards-0").addClass("background-cloud")
+                            $("#weather-cards-0").removeClass("background-rain")
+                            $("#weather-cards-0").removeClass("background-clear")
+
+                        } else if (currentWeather === `Rain`) {
+                            $("#weather-cards-0").addClass("background-rain")
+                            $("#weather-cards-0").removeClass("background-cloud")
+                            $("#weather-cards-0").removeClass("background-clear")
+                        } else {
+                            $("#weather-cards-0").addClass("background-clear")
+                            $("#weather-cards-0").removeClass("background-cloud")
+                            $("#weather-cards-0").removeClass("background-rain")
+
+                        }
+                    }
+
+                    currentWeatherBg()
+
                 })
         })
 }
@@ -133,7 +160,7 @@ $(".weather-cards").each(function () {
     let dayAsce = parseInt($(this).attr("data-day"))
     let date = $("<p>")
     date.text(`${month}/${day + dayAsce}/${year}`)
-    $(date).addClass("text-center text-xl")
+    $(date).addClass("text-center relative top-1 text-2xl m-1")
     $(this).append(date)
 
 })
@@ -157,6 +184,14 @@ function removelastsearch() {
 
 
 }
+
+//clear white-text
+//rain white-text
+//clouds 
+
+
+
+
 
 // const form = document.querySelector("#search-weather");
 // const recentSearches = document.querySelector("#recent-searches");

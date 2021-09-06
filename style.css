@@ -1,0 +1,28 @@
+.background-clear {
+  background: url(./img/clear-skies.jpg);
+  background-position: 25% 25%;
+  font-size: larger;
+}
+
+.background-rain {
+  background: url(./img/rainy.jpg);
+  background-position: 20% 20%;
+  background-size: cover;
+  color: white;
+  font-size: larger;
+}
+
+.background-cloud {
+  background: url(./img/cloudy.jpg);
+  background-position: 50% 20%;
+  font-size: larger;
+}
+
+img {
+  height: 75px;
+  width: 75px;
+  position: relative;
+  float: right;
+  right: 10%;
+  top: 30%;
+}
