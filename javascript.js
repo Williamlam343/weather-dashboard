@@ -41,8 +41,9 @@ function weatherSearch() {
 
     fetch(forecastUrl)
         .then((data) => {
-            if (data.status === 404) { return alert(`city not found`) }
+            if (data.status === 404) { return alert(`city not found`); }
             return data.json()
+
         })
         .then((forecastData) => {
 
@@ -81,8 +82,33 @@ function weatherSearch() {
                         var dailywind = oneCallData.daily[days].wind_speed
                         var dailyhumid = oneCallData.daily[days].humidity
                         var dailyuvi = oneCallData.daily[days].uvi
+                        var dailyicon = oneCallData.daily[days].weather[0].main
+                        // console.log(dailyicon)
+                        //for each box if they are cloudy display cloud icon
+
+                        //create img anchor
+                        let icon = $("<img>")
 
 
+                        if (dailyicon === `Clouds`) {
+                            //set attributes
+                            icon.attr("src", "./img/cloudyicon.png")
+                            $(this).addClass("bg-gradient-to-b from-gray-200 to-blue-200")
+
+                        } else if (dailyicon === `Rain`) {
+
+                            //set attributes
+                            icon.attr("src", "./img/rainyicon.png")
+                            $(this).addClass("bg-gradient-to-b from-gray-100 to-gray-400")
+
+                        }
+                        else {
+                            //set attributes
+                            icon.attr("src", "./img/clearicon.png")
+                            $(this).addClass("bg-gradient-to-b from-gray-200 to-yellow-100")
+                        }
+
+                        $("#weather-cards-" + days).append(icon)
 
                         //creates the p tags
                         let feelslike = $("<p>")
@@ -92,6 +118,8 @@ function weatherSearch() {
                         let uvi = $("<p>")
 
 
+                        //  else if they are rainy display rain icon
+                        // else display sun icon
 
                         //sets the text for the p tags
                         feelslike.text(`Feelslike: ${dailytemp}° F`)
@@ -115,13 +143,8 @@ function weatherSearch() {
                         $(uvi).addClass("mx-2")
 
 
-
                         //appends the p tags to the cards
                         $(this).append(feelslike).append(temp).append(wind).append(humid).append(uvi)
-
-
-
-
 
 
 
@@ -129,20 +152,20 @@ function weatherSearch() {
                     })
 
                     function currentWeatherBg() {
-                        var currentWeather = oneCallData.current.weather[0].main
+                        var currentWeather = oneCallData.daily[0].weather[0].main
 
                         if (currentWeather === `Clouds`) {
-
-                            $("#weather-cards-0").addClass("background-cloud")
+                            main
+                            $("#weather-cards-0").addClass("background-cloud text-white")
                             $("#weather-cards-0").removeClass("background-rain")
                             $("#weather-cards-0").removeClass("background-clear")
 
                         } else if (currentWeather === `Rain`) {
-                            $("#weather-cards-0").addClass("background-rain")
+                            $("#weather-cards-0").addClass("background-rain text-white")
                             $("#weather-cards-0").removeClass("background-cloud")
                             $("#weather-cards-0").removeClass("background-clear")
                         } else {
-                            $("#weather-cards-0").addClass("background-clear")
+                            $("#weather-cards-0").addClass("background-clear text-white")
                             $("#weather-cards-0").removeClass("background-cloud")
                             $("#weather-cards-0").removeClass("background-rain")
 
@@ -178,7 +201,11 @@ function removelastsearch() {
         $("#weather-cards-" + days).find("#humid").remove()
         $("#weather-cards-" + days).find("#feeltemp").remove()
         $("#weather-cards-" + days).find("#UVI").remove()
-        console.log(days)
+        $("#weather-cards-" + days).find("img").remove()
+        $("#weather-cards-" + days).removeClass("bg-gradient-to-b from-gray-200 to-blue-200");
+        $("#weather-cards-" + days).removeClass("bg-gradient-to-b from-gray-100 to-gray-400");
+        $("#weather-cards-" + days).removeClass("bg-gradient-to-b from-gray-200 to-yellow-100");
+
     })
 
 
