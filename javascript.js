@@ -22,13 +22,12 @@ let forecastparams = {
 
 $("form").submit(function (event) {
     event.preventDefault()
-    forecastparams.q = searchInput.val()
+    forecastparams.q = searchInput.val().trim()
 
 
     removelastsearch()
     weatherSearch()
 })
-
 
 
 
@@ -73,38 +72,43 @@ function weatherSearch() {
                     // builds weather cards for each day
                     $(".weather-cards").each(function () {
 
-                        //if new search remove each element
-
-
                         const days = parseInt($(this).attr("data-day"))
+
                         var dailytemp = oneCallData.daily[days].temp.day
                         var dailyfeel = oneCallData.daily[days].feels_like.day
                         var dailywind = oneCallData.daily[days].wind_speed
                         var dailyhumid = oneCallData.daily[days].humidity
                         var dailyuvi = oneCallData.daily[days].uvi
                         var dailyicon = oneCallData.daily[days].weather[0].main
-                        // console.log(dailyicon)
-                        //for each box if they are cloudy display cloud icon
 
-                        //create img anchor
+
+
+                        //* adds weather icon conditons
                         let icon = $("<img>")
 
-
+                        //if cloudy display clouds icon
                         if (dailyicon === `Clouds`) {
                             //set attributes
                             icon.attr("src", "./img/cloudyicon.png")
+                            //set classes
                             $(this).addClass("bg-gradient-to-b from-gray-200 to-blue-200")
 
-                        } else if (dailyicon === `Rain`) {
+                        }
+                        // if rainy display rainy icon
+                        else if (dailyicon === `Rain`) {
 
                             //set attributes
                             icon.attr("src", "./img/rainyicon.png")
+                            //set classes
                             $(this).addClass("bg-gradient-to-b from-gray-100 to-gray-400")
 
                         }
+                        // displays clear icon is not rainy or cloudy
                         else {
+
                             //set attributes
                             icon.attr("src", "./img/clearicon.png")
+                            //set classes
                             $(this).addClass("bg-gradient-to-b from-gray-200 to-yellow-100")
                         }
 
@@ -128,46 +132,51 @@ function weatherSearch() {
                         humid.text(`Humidity: ${dailyhumid}%`)
                         uvi.text(`UV index: ${dailyuvi}`)
 
+                        // adds attribute to the p tags
                         feelslike.attr("id", "feeltemp")
                         temp.attr("id", "temp")
                         wind.attr("id", "wind")
                         humid.attr("id", "humid")
                         uvi.attr("id", "UVI")
 
-
                         //classes for for the p tags
                         $(feelslike).addClass("mx-2")
                         $(temp).addClass("mx-2")
                         $(wind).addClass("mx-2")
                         $(humid).addClass("mx-2")
-                        $(uvi).addClass("mx-2")
+                        $(uvi).addClass("mx-2 text-black w-max p-1")
 
+                        // * UV index color
+                        // uvi <= 3 = fair
+                        if (dailyuvi <= 3) { $(uvi).addClass("bg-green-400") }
+                        // if uvi > 7 = severe
+                        else if (dailyuvi >= 7) { $(uvi).addClass("bg-red-400") }
+                        //else uvi is moderate
+                        else { $(uvi).addClass("bg-yellow-400") }
 
                         //appends the p tags to the cards
                         $(this).append(feelslike).append(temp).append(wind).append(humid).append(uvi)
-
-
-
 
                     })
 
                     function currentWeatherBg() {
                         var currentWeather = oneCallData.daily[0].weather[0].main
+                        $("#weather-cards-0").find("img").remove()
+                        //removes back class after each search
+                        $("#weather-cards-0").removeClass("background-rain")
+                        $("#weather-cards-0").removeClass("background-clear")
+                        $("#weather-cards-0").removeClass("background-cloud")
 
                         if (currentWeather === `Clouds`) {
                             main
                             $("#weather-cards-0").addClass("background-cloud text-white")
-                            $("#weather-cards-0").removeClass("background-rain")
-                            $("#weather-cards-0").removeClass("background-clear")
 
                         } else if (currentWeather === `Rain`) {
                             $("#weather-cards-0").addClass("background-rain text-white")
-                            $("#weather-cards-0").removeClass("background-cloud")
-                            $("#weather-cards-0").removeClass("background-clear")
+
                         } else {
                             $("#weather-cards-0").addClass("background-clear text-white")
-                            $("#weather-cards-0").removeClass("background-cloud")
-                            $("#weather-cards-0").removeClass("background-rain")
+
 
                         }
                     }
@@ -177,7 +186,7 @@ function weatherSearch() {
                 })
         })
 }
-
+// adds date to each card
 $(".weather-cards").each(function () {
 
     let dayAsce = parseInt($(this).attr("data-day"))
@@ -188,7 +197,7 @@ $(".weather-cards").each(function () {
 
 })
 
-
+//prevents text and images from overlapping by removing elements after each search
 function removelastsearch() {
 
     //if the p tags exist remove them
@@ -212,43 +221,3 @@ function removelastsearch() {
 
 }
 
-//clear white-text
-//rain white-text
-//clouds 
-
-
-
-
-
-// const form = document.querySelector("#search-weather");
-// const recentSearches = document.querySelector("#recent-searches");
-
-// Geo code endpoint
-// http://api.openweathermap.org/geo/1.0/direct?q={city name},{state code},{country code}&limit={limit}&appid={API key}
-
-// One call endpoint
-// https://api.openweathermap.org/data/2.5/onecall?lat={lat}&lon={lon}&exclude={part}&appid={API key}
-
-// form.addEventListener("submit", function (e) {
-// e.preventDefault();
-    // Retrieve the city name from the input#city-name element
-    // and we trim off any extra whitespace
-    // const city = document.querySelector("input#city-name").value.trim();
-
-    // Fetch weather data
-    // Where are we going to source our data
-    // What does the api need to find our city
-    // populate our weather details
-// });
-
-// recentSearches.addEventListener("click", function (e) {
-//     const target = e.target;
-//     if (!target.matches("button")) return;
-    // Retrieve the city name from the button.textContent
-    // Fetch weather data
-    // populate our weather details
-// });
-
-    // window.navigator.geolocation.getCurrentPosition(function (geoData) {
-    //   console.log(geoData);
-    // });
