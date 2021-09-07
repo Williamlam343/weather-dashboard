@@ -1,6 +1,7 @@
 .background-clear {
   background: url(./img/clear-skies.jpg);
   background-position: 25% 25%;
+  background-size: cover;
   font-size: larger;
 }
 
@@ -15,6 +16,7 @@
 .background-cloud {
   background: url(./img/cloudy.jpg);
   background-position: 50% 20%;
+  background-size: cover;
   font-size: larger;
 }
 
@@ -27,4 +29,12 @@ img {
   width: 50px;
   padding: 1px;
   float: right;
+}
+
+span {
+  text-transform: capitalize;
+}
+
+.recent-btn {
+  text-transform: capitalize;
 }

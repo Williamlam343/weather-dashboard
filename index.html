@@ -22,12 +22,10 @@
           <div
             class="
               text-black
-              bg-blue-600
               flex
               items-center
               w-full
               p-3
-              shadow-sm
               border border-gray-200
               justify-center
               rounded-b-3xl
@@ -75,44 +73,23 @@
     </div>
 
     <main class="absolute bg-gray-200 w-full">
-      <div class="flex bg-blue-300">
+      <div class="flex bg-blue-200">
         <div
           id="recent-search"
           class="
-            flex-1 flex-col flex-wrap
-            py-3
+            flex flex-col flex-wrap
+            p-3
             rounded-xl
             m-3
-            justify-center
-            max-w-sm
             bg-gray-700
             h-auto
             border-solid border-gray-800 border-1
           "
         >
-          <div class="text-center w-full flex-1 text-white text-xl">
+          <div class="text-center w-full text-white text-xl">
             Recent Searches
           </div>
-          <button
-            type="submit"
-            class="
-              flex-auto
-              border border-gray-400
-              bg-gray-200
-              text-gray-700
-              rounded-md
-              py-2
-              m-3
-              w-full
-              transition
-              duration-500
-              ease
-              select-none
-              hover:bg-gray-300
-            "
-          >
-            Boca Raton
-          </button>
+          <div id="recent-flexbox" class="flex w-full flex-col"></div>
         </div>
         <div
           class="
@@ -129,7 +106,7 @@
         >
           <!-- CURRENT WEATHER DIV -->
           <div class="flex justify-center text-white text-xl w-full">
-            Current Weather
+            <span id="currentWeather">Current Weather: </span>
           </div>
           <div
             id="weather-cards-0"

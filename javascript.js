@@ -11,24 +11,39 @@ var formInput = $("#form-input")
 var btnInput = $("#search-btn")
 const APIKEY = "64f2c72988fa56f79a0b2d9d137d67dc"
 const days = parseInt($(this).attr("data-day"))
-let forecastparams = {
 
+let recentSearchesArr = []
+let forecastparams = {
     q: "",
     appid: APIKEY,
     units: "imperial",
 
-
 }
 
+
+// console.log(recentSearchesArr)
 $("form").submit(function (event) {
     event.preventDefault()
+
+    // adds the search input into search params object
     forecastparams.q = searchInput.val().trim()
+    // returns of no value is given
+    if (forecastparams.q === "") return
+    // displays the current city being searched
+    $("#currentWeather").text(`Current Weather: ${forecastparams.q}`)
+    // adds a recent search button after each search
+
+
 
 
     removelastsearch()
     weatherSearch()
 })
+// TODO function to search recent searches
+// function recentSearcher() { $(".recent-btn").map(function () { return this.innerText }) }
 
+
+// when that button is pressed fetch the run weatherSearch
 
 
 // fetchs data from api:forecast
@@ -40,16 +55,50 @@ function weatherSearch() {
 
     fetch(forecastUrl)
         .then((data) => {
+            //checks if city exist return alert city not found if it doesn't
             if (data.status === 404) { return alert(`city not found`); }
+
+
+
+
+            if (JSON.parse(localStorage.getItem("cities")) !== null) {
+                recentSearchesArr = JSON.parse(localStorage.getItem("cities"))
+            }
+
+            //adds the city names into a set
+            recentSearchesArr.push(searchInput.val().trim())
+
+            // set the array into a set so there are no repeat values
+            let uniqueCities = [...new Set(recentSearchesArr)]
+
+
+
+            // limit recent searches to seven cities
+
+            if (uniqueCities.length > 7) { uniqueCities.shift() }
+
+            // stores the city names after coverting it into an set
+            localStorage.setItem("cities", JSON.stringify(uniqueCities))
+
+            if ($("#recent-flexbox").find("button").length >= 7) { $("#recent-flexbox").find("button")[0].remove() }
+            if (uniqueCities !== undefined) {
+
+                let recentBtn = $("<button>")
+                $(recentBtn).text(uniqueCities[uniqueCities.length - 1])
+                $(recentBtn).attr("type", "submit")
+                $(recentBtn).attr("data-city", uniqueCities.length - 1)
+                $(recentBtn).addClass(" flex-auto border border-gray-400 bg-gray-200 text-gray-700 rounded-md py-2 my-3 w-full transition duration-500 ease select-none hover:bg-gray-300 recent-btn ")
+                $("#recent-flexbox").append(recentBtn)
+            }
+
             return data.json()
 
         })
         .then((forecastData) => {
+            if (forecastData === undefined) { return }
+            // console.log(forecastData)
 
-            console.log(forecastData)
             const oneCallparams = {
-
-
                 lat: forecastData.city.coord.lat,
                 lon: forecastData.city.coord.lon,
                 appid: APIKEY,
@@ -66,7 +115,7 @@ function weatherSearch() {
 
                 .then((data) => data.json())
                 .then((oneCallData) => {
-                    console.log(oneCallData)
+                    // console.log(oneCallData)
 
 
                     // builds weather cards for each day
@@ -163,19 +212,19 @@ function weatherSearch() {
                         var currentWeather = oneCallData.daily[0].weather[0].main
                         $("#weather-cards-0").find("img").remove()
                         //removes back class after each search
-                        $("#weather-cards-0").removeClass("background-rain")
-                        $("#weather-cards-0").removeClass("background-clear")
-                        $("#weather-cards-0").removeClass("background-cloud")
+                        $("#weather-cards-0").removeClass("background-rain text-white")
+                        $("#weather-cards-0").removeClass("background-clear text-black")
+                        $("#weather-cards-0").removeClass("background-cloud text-white")
 
                         if (currentWeather === `Clouds`) {
-                            main
+
                             $("#weather-cards-0").addClass("background-cloud text-white")
 
                         } else if (currentWeather === `Rain`) {
                             $("#weather-cards-0").addClass("background-rain text-white")
 
                         } else {
-                            $("#weather-cards-0").addClass("background-clear text-white")
+                            $("#weather-cards-0").addClass("background-clear text-black")
 
 
                         }
@@ -205,6 +254,7 @@ function removelastsearch() {
 
 
         const days = parseInt($(this).attr("data-day"))
+
         $("#weather-cards-" + days).find("#wind").remove()
         $("#weather-cards-" + days).find("#temp").remove()
         $("#weather-cards-" + days).find("#humid").remove()
@@ -217,7 +267,33 @@ function removelastsearch() {
 
     })
 
+}
+//TODO recent searches
+function RecentSearches() {
+    if (JSON.parse(localStorage.getItem("cities")) !== null) {
+        uniqueCities = JSON.parse(localStorage.getItem("cities"))
 
+
+        // when a city is searched create a button of that city
+
+
+        // add cities to recent searches
+        for (let i = 0; i < uniqueCities.length; i++) {
+
+            let recentBtn = $("<button>")
+
+            $(recentBtn).text(uniqueCities[i])
+            $(recentBtn).attr("type", "submit")
+            $(recentBtn).attr("data-city", i)
+            $(recentBtn).addClass(" flex-auto border border-gray-400 bg-gray-200 text-gray-700 rounded-md py-2 my-3 w-full transition duration-500 ease select-none hover:bg-gray-300 recent-btn ")
+            $("#recent-flexbox").append(recentBtn)
+        }
+    }
+
+
+    // store the cities into local storage
+    // remove the last item from recent searches once it's full
 
 }
 
+RecentSearches()
