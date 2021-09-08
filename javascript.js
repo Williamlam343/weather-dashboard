@@ -22,7 +22,7 @@ let forecastparams = {
 
 
 // console.log(recentSearchesArr)
-$("form").submit(function (event) {
+formInput.submit(function (event) {
     event.preventDefault()
 
     // adds the search input into search params object
@@ -33,14 +33,12 @@ $("form").submit(function (event) {
     $("#currentWeather").text(`Current Weather: ${forecastparams.q}`)
     // adds a recent search button after each search
 
-
-
-
     removelastsearch()
     weatherSearch()
 })
+
 // TODO function to search recent searches
-// function recentSearcher() { $(".recent-btn").map(function () { return this.innerText }) }
+
 
 
 // when that button is pressed fetch the run weatherSearch
@@ -59,8 +57,6 @@ function weatherSearch() {
             if (data.status === 404) { return alert(`city not found`); }
 
 
-
-
             if (JSON.parse(localStorage.getItem("cities")) !== null) {
                 recentSearchesArr = JSON.parse(localStorage.getItem("cities"))
             }
@@ -71,8 +67,6 @@ function weatherSearch() {
             // set the array into a set so there are no repeat values
             let uniqueCities = [...new Set(recentSearchesArr)]
 
-
-
             // limit recent searches to seven cities
 
             if (uniqueCities.length > 7) { uniqueCities.shift() }
@@ -81,12 +75,13 @@ function weatherSearch() {
             localStorage.setItem("cities", JSON.stringify(uniqueCities))
 
             if ($("#recent-flexbox").find("button").length >= 7) { $("#recent-flexbox").find("button")[0].remove() }
-            if (uniqueCities !== undefined) {
+
+            if (uniqueCities !== undefined && uniqueCities !== "") {
 
                 let recentBtn = $("<button>")
                 $(recentBtn).text(uniqueCities[uniqueCities.length - 1])
                 $(recentBtn).attr("type", "submit")
-                $(recentBtn).attr("data-city", uniqueCities.length - 1)
+                $(recentBtn).attr("data-btnNum", uniqueCities.length - 1)
                 $(recentBtn).addClass(" flex-auto border border-gray-400 bg-gray-200 text-gray-700 rounded-md py-2 my-3 w-full transition duration-500 ease select-none hover:bg-gray-300 recent-btn ")
                 $("#recent-flexbox").append(recentBtn)
             }
@@ -111,12 +106,9 @@ function weatherSearch() {
             //fetchs data OneCallapi
             fetch(oneCallApi)
 
-
-
                 .then((data) => data.json())
                 .then((oneCallData) => {
-                    // console.log(oneCallData)
-
+                    console.log(oneCallData)
 
                     // builds weather cards for each day
                     $(".weather-cards").each(function () {
@@ -129,8 +121,6 @@ function weatherSearch() {
                         var dailyhumid = oneCallData.daily[days].humidity
                         var dailyuvi = oneCallData.daily[days].uvi
                         var dailyicon = oneCallData.daily[days].weather[0].main
-
-
 
                         //* adds weather icon conditons
                         let icon = $("<img>")
@@ -226,7 +216,6 @@ function weatherSearch() {
                         } else {
                             $("#weather-cards-0").addClass("background-clear text-black")
 
-
                         }
                     }
 
@@ -273,7 +262,6 @@ function RecentSearches() {
     if (JSON.parse(localStorage.getItem("cities")) !== null) {
         uniqueCities = JSON.parse(localStorage.getItem("cities"))
 
-
         // when a city is searched create a button of that city
 
 
@@ -284,16 +272,50 @@ function RecentSearches() {
 
             $(recentBtn).text(uniqueCities[i])
             $(recentBtn).attr("type", "submit")
-            $(recentBtn).attr("data-city", i)
+            $(recentBtn).attr("data-btnNum", i)
+            $(recentBtn).attr("id", `btnNum-` + i)
             $(recentBtn).addClass(" flex-auto border border-gray-400 bg-gray-200 text-gray-700 rounded-md py-2 my-3 w-full transition duration-500 ease select-none hover:bg-gray-300 recent-btn ")
             $("#recent-flexbox").append(recentBtn)
         }
+
+
+
     }
-
-
     // store the cities into local storage
     // remove the last item from recent searches once it's full
-
 }
+
+$("#recent-form").on("click", function (e) {
+    e.preventDefault()
+    const target = e.target;
+    if (!target.matches("button")) return;
+
+    $(".recent-btn").each(function () {
+        let btnNum = $(this).attr("data-btnNum")
+
+        if (target.matches("#btnNum-" + btnNum)) {
+
+            forecastparams.q = $("#btnNum-" + btnNum).text()
+
+
+            $("#currentWeather").text(`Current Weather: ${forecastparams.q}`)
+            weatherSearch()
+            removelastsearch()
+        }
+
+
+
+
+    })
+
+
+    //Retrieve the city name from the input
+    // fetch weather data
+    // populate our weather details
+});
+
+
+
+
 
 RecentSearches()
