@@ -74,6 +74,7 @@ function weatherSearch() {
             // stores the city names after coverting it into an set
             localStorage.setItem("cities", JSON.stringify(uniqueCities))
 
+            // removes btn element if it exceeds 7 btn
             if ($("#recent-flexbox").find("button").length >= 7) { $("#recent-flexbox").find("button")[0].remove() }
 
             if (uniqueCities !== undefined && uniqueCities !== "") {
