@@ -70,7 +70,7 @@ function weatherSearch() {
             // limit recent searches to seven cities
 
             if (uniqueCities.length > 7) { uniqueCities.shift() }
-
+            console.log(uniqueCities)
             // stores the city names after coverting it into an set
             localStorage.setItem("cities", JSON.stringify(uniqueCities))
 
